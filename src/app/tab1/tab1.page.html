@@ -38,7 +38,7 @@
         <ion-text class="coords">My Address : {{address || ''}}
         </ion-text>
       </ion-row>
-      <ion-button (click)="reverseGeocode()" expand="full">Get My Address</ion-button>
+      <ion-button *ngIf="!address" (click)="reverseGeocode()" expand="full">Get My Address</ion-button>
 
     </ion-card-content>
   </ion-card>

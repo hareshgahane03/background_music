@@ -1,6 +1,7 @@
 import { Component, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LoadingController } from '@ionic/angular';
+import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 
 @Component({
   selector: 'app-tab2',
@@ -21,7 +22,8 @@ export class Tab2Page {
   constructor(
     public zone: NgZone,
     public geolocation: Geolocation,
-    public loadingCtrl: LoadingController
+    public loadingCtrl: LoadingController,
+    private nativeGeocoder: NativeGeocoder
   ) {
     this.geocoder = new google.maps.Geocoder;
     let elem = document.createElement("div")
@@ -34,19 +36,26 @@ export class Tab2Page {
     this.markers = [];
     this.loading = this.loadingCtrl.create();
   }
+  coords: any;
 
-  ionViewDidEnter(){
-      // let infoWindow = new google.maps.InfoWindow({map: map});
-      //Set latitude and longitude of some place
+  ionViewDidEnter() {
+    // let infoWindow = new google.maps.InfoWindow({map: map});
+    //Set latitude and longitude of some place
+    this.locate();
     this.map = new google.maps.Map(this.mapElement.nativeElement, {
-      center: {lat: 19.7514798, lng: 75.7138884},
-      zoom: 11,
+      center: { lat: this.coords.latitude, lng: this.coords.longitude },
+      zoom: 20,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
     console.log(this.map)
   }
 
-  tryGeolocation(){
+  async locate() {
+    const coordinates = await this.geolocation.getCurrentPosition();
+    return this.coords = coordinates.coords;
+  }
+
+  tryGeolocation() {
     this.loading.present();
     this.clearMarkers();//remove previous markers
 
@@ -70,7 +79,7 @@ export class Tab2Page {
     });
   }
 
-  updateSearchResults(){
+  updateSearchResults() {
     if (this.autocomplete.input == '') {
       this.autocompleteItems = [];
       return;
@@ -78,26 +87,26 @@ export class Tab2Page {
     this.GoogleAutocomplete.getPlacePredictions({ input: this.autocomplete.input },
       (predictions, status) => {
         this.autocompleteItems = [];
-        if(predictions){
+        if (predictions) {
           this.zone.run(() => {
             predictions.forEach((prediction) => {
               this.autocompleteItems.push(prediction);
             });
           });
         }
-    });
+      });
   }
 
-  selectSearchResult(item){
+  selectSearchResult(item) {
     console.log(item)
     this.clearMarkers();
     this.autocompleteItems = [];
 
-    this.geocoder.geocode({'placeId': item.place_id}, (results, status) => {
-      if(status === 'OK' && results[0]){
+    this.geocoder.geocode({ 'placeId': item.place_id }, (results, status) => {
+      if (status === 'OK' && results[0]) {
         let position = {
-            lat: results[0].geometry.location.lat,
-            lng: results[0].geometry.location.lng
+          lat: results[0].geometry.location.lat,
+          lng: results[0].geometry.location.lng
         };
         let marker = new google.maps.Marker({
           position: results[0].geometry.location,
@@ -109,7 +118,7 @@ export class Tab2Page {
     })
   }
 
-  clearMarkers(){
+  clearMarkers() {
     for (var i = 0; i < this.markers.length; i++) {
       console.log(this.markers[i])
       this.markers[i].setMap(null);

@@ -14,7 +14,7 @@ declare const google: any;
 export class Tab3Page implements OnInit {
 
   mapData = {
-    zoom: 16,
+    zoom: 20,
     latitude: 21.1321178,
     longitude: 79.1096177,
     destination: {

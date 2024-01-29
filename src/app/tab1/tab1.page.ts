@@ -15,6 +15,16 @@ export class Tab1Page {
   address: any;
   private geoCoder;
 
+  geolocation: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    altitudeAccuracy?: number;
+    altitude?: number;
+    speed?: number;
+    heading?: number;
+  };
+
   constructor(private nativeGeocoder: NativeGeocoder) {
     NativeAudio.preload({
       assetId: "music",
@@ -36,31 +46,46 @@ export class Tab1Page {
         console.log(result.duration);
       })
   }
+
+  ionViewWillLeave() {
+    this.address = null;
+    this.coords = null;
+    this.geolocation = {
+      latitude: null,
+      longitude: null,
+      accuracy: null,
+      altitudeAccuracy: null,
+      altitude: null,
+      speed: null,
+      heading: null,
+    };
+  }
   async locate() {
     const coordinates = await Geolocation.getCurrentPosition();
-    console.log('Current', coordinates);
     this.coords = coordinates.coords;
   }
   async reverseGeocode() {
-    if (!this.coords) {
-      const coordinates = await Geolocation.getCurrentPosition();
-      this.coords = coordinates.coords;
-    }
-    this.geoCoder = new google.maps.Geocoder();
-
-    this.geoCoder.geocode({ location: { lat: this.coords.latitude, lng: this.coords.longitude } }, (results, status) => {
-      console.log('results', results)
-      if (status === 'OK') {
-        if (results[0]) {
-          console.log('results', results[0])
-          this.address = results[0].formatted_address;
+    this.geolocation = await (await Geolocation.getCurrentPosition()).coords;
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode(
+      {
+        location: {
+          lat: this.geolocation.latitude,
+          lng: this.geolocation.longitude,
+        },
+      },
+      (results, status) => {
+        if (status === 'OK') {
+          if (results[0]) {
+            this.address = results[0].formatted_address;
+          } else {
+            window.alert('No results found');
+          }
         } else {
-          window.alert('No results found');
+          window.alert('Geocoder failed due to: ' + status);
         }
-      } else {
-        window.alert('Geocoder failed due to: ' + status);
       }
-    });
+    );
   }
 
 }
