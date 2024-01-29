@@ -1,0 +1,21 @@
+ion-content ion-toolbar {
+	--background: translucent;
+}
+agm-map {
+	height: 100vh;
+}
+.distance-duration-badge {
+	position: absolute;
+	top: 80px;
+	z-index: 9999;
+	display: flex;
+	justify-content: center;
+}
+
+.icons {
+	position: absolute;
+	bottom: 80px;
+	z-index: 9999;
+	display: flex;
+	justify-content: center;
+}

@@ -1,0 +1,25 @@
+{
+	"appId": "com.googleMap.app",
+	"appName": "google-map",
+	"bundledWebRuntime": false,
+	"npmClient": "npm",
+	"webDir": "www",
+	"plugins": {
+		"SplashScreen": {
+			"launchAutoHide": true,
+			"launchShowDuration": 0
+		},
+		"LottieSplashScreen": {
+			"androidScaleType": "CENTER_CROP",
+			"androidBackgroundColor": "#ffffff",
+			"lottieAssetPath": "assets/loading.json"
+		}
+	},
+	"cordova": {
+		"preferences": {
+			"LottieFullScreen": true,
+			"LottieHideAfterAnimationEnd": true,
+			"LottieAnimationLocation": "public/assets/splash.json"
+		}
+	}
+}
